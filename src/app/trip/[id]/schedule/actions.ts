@@ -340,9 +340,11 @@ export async function scheduleDayActivities(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Non autenticato' }
 
-  let q = supabase.from('activities').select('*').eq('day_id', dayId)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let q = (supabase as any).from('activities').select('*').eq('day_id', dayId)
   if (targetDate) q = q.or(`activity_date.eq.${targetDate},activity_date.is.null`)
-  const { data: all } = await q.order('position', { ascending: true })
+  const { data: allRaw } = await q.order('position', { ascending: true })
+  const all = (allRaw ?? []) as import('@/types/database').Activity[]
 
   if (!all || all.length === 0) return { error: 'Nessuna attività trovata' }
   const anchors    = all.filter(a => !!a.time_start)

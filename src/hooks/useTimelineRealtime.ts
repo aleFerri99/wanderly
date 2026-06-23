@@ -15,13 +15,15 @@ export function useTimelineRealtime({ tripId, onUpdate }: Props) {
   onUpdateRef.current = onUpdate
 
   const refetch = useCallback(async () => {
-    const { data } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: rawData } = await (supabase as any)
       .from('days')
       .select(`*, activities(*)`)
       .eq('trip_id', tripId)
       .order('position', { ascending: true })
 
-    if (!data) return
+    const data = (rawData ?? []) as DayWithActivities[]
+    if (!data.length) return
 
     const normalized = data.map(day => ({
       ...day,

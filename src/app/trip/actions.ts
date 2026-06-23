@@ -20,19 +20,23 @@ export async function createTrip(formData: FormData) {
   const startDate = formData.get('startDate') as string
   const endDate = formData.get('endDate') as string
 
-  const { data: trip, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: tripRaw, error } = await (supabase as any)
     .from('trips')
     .insert({
       name,
       destination: destination || null,
+      cover_url:   null,
       start_date: startDate || null,
       end_date: endDate || null,
       created_by: user.id,
     })
     .select()
     .single()
+  const trip = tripRaw as { id: string } | null
 
-  if (error) return { error: error.message }
+  if (error) return { error: (error as { message: string }).message }
+  if (!trip) return { error: 'Errore creazione viaggio' }
 
   revalidatePath('/dashboard')
   redirect(`/trip/${trip.id}`)

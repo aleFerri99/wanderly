@@ -18,19 +18,14 @@ export async function addDay(
 ) {
   const supabase = await createServerSupabaseClient()
 
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('days')
-    .insert({
-      trip_id: tripId,
-      title,
-      date: date || null,
-      date_end: dateEnd || null,
-      position,
-    })
+    .insert({ trip_id: tripId, title, date: date || null, date_end: dateEnd || null, position })
     .select()
     .single()
 
-  if (error) return { error: error.message }
+  if (error) return { error: (error as { message: string }).message }
   revalidatePath(`/trip/${tripId}`)
   return { data }
 }
@@ -87,23 +82,19 @@ export async function addActivity(
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('activities')
     .insert({
-      trip_id: tripId,
-      day_id: dayId,
-      title,
-      time_start: timeStart || null,
-      notes: notes || null,
-      location: location || null,
-      activity_date: activityDate || null,
-      position,
-      created_by: user?.id ?? null,
+      trip_id: tripId, day_id: dayId, title,
+      time_start: timeStart || null, notes: notes || null,
+      location: location || null, activity_date: activityDate || null,
+      position, created_by: user?.id ?? null,
     })
     .select()
     .single()
 
-  if (error) return { error: error.message }
+  if (error) return { error: (error as { message: string }).message }
   revalidatePath(`/trip/${tripId}`)
   return { data }
 }

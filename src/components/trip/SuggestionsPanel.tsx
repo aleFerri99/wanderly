@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useTransition } from 'react'
+import { useState, useEffect, useTransition, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { addActivity } from '@/app/trip/[id]/timeline/actions'
 import { refreshTripSuggestions } from '@/app/trip/[id]/suggestions/actions'
@@ -62,17 +62,21 @@ export function SuggestionsPanel({ tripId, currentUserId, defaultDayId }: Props)
   const [isPending, startTransition] = useTransition()
   const [refreshing, setRefreshing] = useState(false)
 
+  // load esposta fuori dall'useEffect per poterla richiamare manualmente
+  const load = useCallback(async () => {
+    setLoading(true)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (supabase as any)
+      .from('trip_suggestions')
+      .select('*')
+      .eq('trip_id', tripId)
+      .order('priority', { ascending: false })
+    setSuggestions((data ?? []) as Suggestion[])
+    setLoading(false)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tripId])
+
   useEffect(() => {
-    async function load() {
-      setLoading(true)
-      const { data } = await supabase
-        .from('trip_suggestions')
-        .select('*')
-        .eq('trip_id', tripId)
-        .order('priority', { ascending: false })
-      setSuggestions((data ?? []) as Suggestion[])
-      setLoading(false)
-    }
     load()
 
     // Realtime: aggiornamento automatico quando il cron genera nuovi suggerimenti
@@ -91,11 +95,11 @@ export function SuggestionsPanel({ tripId, currentUserId, defaultDayId }: Props)
   async function handleRefresh() {
     setRefreshing(true)
     const result = await refreshTripSuggestions(tripId)
+    // Ricarica sempre dopo il server action, indipendentemente dalla Realtime
+    await load()
     setRefreshing(false)
     if (result && 'error' in result) {
-      alert(`Errore: ${result.error}`)
-    } else if (result && 'count' in result && result.count === 0) {
-      alert('Nessun suggerimento generato — meteo ok o nessun conflitto rilevato.')
+      console.error('[SuggestionsPanel]', result.error)
     }
   }
 

@@ -23,15 +23,17 @@ export function NotesTab({ tripId, currentUserId }: Props) {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: rawData } = await (supabase as any)
         .from('notes')
         .select(`*, editor:profiles!updated_by(*)`)
         .eq('trip_id', tripId)
         .single()
+      const data = rawData as (Note & { editor: Profile | null }) | null
       if (data) {
-        setNote(data as Note)
+        setNote(data)
         setContent(data.content ?? '')
-        setEditor((data as Note & { editor: Profile }).editor ?? null)
+        setEditor(data.editor ?? null)
       }
     }
     load()
@@ -55,7 +57,8 @@ export function NotesTab({ tripId, currentUserId }: Props) {
   const save = useCallback(async (text: string) => {
     if (!note) return
     setSaveStatus('saving')
-    await supabase.from('notes').update({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from('notes').update({
       content: text,
       updated_by: currentUserId,
       updated_at: new Date().toISOString(),

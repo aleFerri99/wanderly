@@ -22,7 +22,8 @@ export default async function JoinPage({ params }: Props) {
   }
 
   // Prova il join
-  const { data: tripId, error } = await supabase.rpc('join_trip_by_code', {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: tripId, error } = await (supabase as any).rpc('join_trip_by_code', {
     p_invite_code: code.toUpperCase(),
   })
 

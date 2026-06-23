@@ -60,7 +60,8 @@ export async function deleteAccount() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Non autenticato' }
 
-  const { error } = await supabase.rpc('delete_own_account')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).rpc('delete_own_account')
   if (error) return { error: error.message }
 
   redirect('/auth/login')

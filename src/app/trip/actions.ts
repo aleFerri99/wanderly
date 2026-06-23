@@ -51,7 +51,8 @@ export async function joinTrip(formData: FormData) {
 
   const inviteCode = (formData.get('inviteCode') as string).trim().toUpperCase()
 
-  const { data: tripId, error } = await supabase.rpc('join_trip_by_code', {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: tripId, error } = await (supabase as any).rpc('join_trip_by_code', {
     p_invite_code: inviteCode,
   })
 

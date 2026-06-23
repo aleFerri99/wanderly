@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { ProfileForm } from './ProfileForm'
 import { signOut } from '@/app/auth/actions'
+import type { Profile } from '@/types/database'
 import './profile.css'
 
 export default async function ProfilePage() {
@@ -15,11 +16,12 @@ export default async function ProfilePage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase
+  const { data: profileRaw } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
+  const profile = profileRaw as Profile | null
 
   if (!profile) redirect('/auth/login')
 

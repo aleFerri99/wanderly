@@ -39,11 +39,12 @@ export default async function TripPage({ params, searchParams }: Props) {
   const myMembership = trip.trip_members?.find(m => m.user_id === user.id)
   if (!myMembership) redirect('/dashboard')
 
-  const { data: myProfile } = await supabase
+  const { data: myProfileRaw } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
+  const myProfile = myProfileRaw as Profile | null
 
   const { data: days } = await supabase
     .from('days')

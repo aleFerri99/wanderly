@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { CreateTripModal } from '@/components/trip/CreateTripModal'
 import { JoinTripModal } from '@/components/trip/JoinTripModal'
-import type { TripWithMembers } from '@/types/database'
+import type { Profile, TripWithMembers } from '@/types/database'
 import './dashboard.css'
 
 export default async function DashboardPage() {
@@ -17,11 +17,12 @@ export default async function DashboardPage() {
   if (!user) redirect('/auth/login')
 
   // Carica profilo
-  const { data: profile } = await supabase
+  const { data: profileRaw } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
+  const profile = profileRaw as Profile | null
 
   // Carica viaggi con membri
   const { data: trips } = await supabase

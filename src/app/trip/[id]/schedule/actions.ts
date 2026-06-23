@@ -302,11 +302,11 @@ function timeToMin(t: string): number {
 
 function mathFallback(
   toSchedule: Array<{ lat: number | null; lng: number | null; title: string; notes: string | null; duration_minutes: number | null; time_start: string | null }>,
-  anchors: Array<{ time_start: string; duration_minutes: number | null }>,
+  anchors: Array<{ time_start: string | null; duration_minutes: number | null }>,
 ): ScheduleItem[] {
   const ordered = greedyTSP(toSchedule)
   const lastAnchorEnd = anchors.reduce<number>((mx, a) =>
-    Math.max(mx, timeToMin(a.time_start!) + (a.duration_minutes ?? 60)), -1)
+    a.time_start ? Math.max(mx, timeToMin(a.time_start) + (a.duration_minutes ?? 60)) : mx, -1)
   let cursor = lastAnchorEnd >= 0 ? lastAnchorEnd + 15 : -1
   return ordered.map((act, i) => {
     const ideal = idealStartMin(act.title, act.notes)

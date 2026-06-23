@@ -75,8 +75,8 @@ export async function signInWithGoogle() {
     },
   })
 
-  if (error) return { error: error.message }
-  if (data.url) redirect(data.url)
+  if (error || !data.url) redirect('/auth/login?error=oauth')
+  redirect(data.url)
 }
 
 // ─── LOGOUT ───────────────────────────────────────────────────

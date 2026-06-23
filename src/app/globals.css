@@ -1,0 +1,72 @@
+/* ============================================================
+   src/app/globals.css
+   Reset + variabili base
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-brand: #1D9E75;
+  --color-brand-dark: #0F6E56;
+  --color-brand-light: #E1F5EE;
+  --font: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+}
+
+html {
+  font-family: var(--font);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font);
+  color: #1a1a1a;
+  background: #f8f7f4;
+  line-height: 1.5;
+  /* Previeni overscroll bounce su iOS */
+  overscroll-behavior: none;
+}
+
+input, button, select, textarea {
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Smooth scrolling nativo */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar sottile */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d0d0cb;
+  border-radius: 99px;
+}
+
+/* Focus ring accessibile */
+:focus-visible {
+  outline: 2px solid #1D9E75;
+  outline-offset: 2px;
+}
+
+/* Riduzione moto */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

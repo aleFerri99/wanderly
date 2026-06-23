@@ -1,0 +1,5 @@
+.import-page { min-height: 100dvh; background: #f8f7f4; }
+.import-header { position: sticky; top: 0; z-index: 10; background: rgba(248,247,244,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid #e8e8e4; display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 1rem; }
+.import-back { color: #1D9E75; font-size: 0.875rem; font-weight: 500; text-decoration: none; }
+.import-header-title { font-size: 0.9375rem; font-weight: 600; color: #1a1a1a; }
+.import-main { max-width: 600px; margin: 0 auto; padding: 1.25rem 1rem 5rem; }

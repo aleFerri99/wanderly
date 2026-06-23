@@ -90,8 +90,13 @@ export function SuggestionsPanel({ tripId, currentUserId, defaultDayId }: Props)
 
   async function handleRefresh() {
     setRefreshing(true)
-    await refreshTripSuggestions(tripId)
+    const result = await refreshTripSuggestions(tripId)
     setRefreshing(false)
+    if (result && 'error' in result) {
+      alert(`Errore: ${result.error}`)
+    } else if (result && 'count' in result && result.count === 0) {
+      alert('Nessun suggerimento generato — meteo ok o nessun conflitto rilevato.')
+    }
   }
 
   function handleAddActivity(s: Suggestion) {

@@ -115,9 +115,9 @@ export default async function TripPage({ params, searchParams }: Props) {
   }
 
   // Conta suggerimenti attivi per badge sul tab AI
-  const { data: suggestionsCount } = await supabase
+  const { count: suggestionsCount } = await supabase
     .from('trip_suggestions')
-    .select('id', { count: 'exact', head: true })
+    .select('*', { count: 'exact', head: true })
     .eq('trip_id', id)
   const aiCount = suggestionsCount ?? 0
 

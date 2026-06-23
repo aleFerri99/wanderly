@@ -2,30 +2,30 @@
 // src/app/api/cron/weather/route.ts
 // Cron job giornaliero (12:00 ora italiana = 10:00 UTC)
 // Configurato in vercel.json — chiamato da Vercel Cron
-//
-// Flusso:
-//  1. Trova i viaggi con attività nei prossimi 2 giorni
-//  2. Fetch previsioni Open-Meteo per ogni destinazione
-//  3. Cache in weather_cache (UPSERT)
-//  4. Agente Meteorologo: analizza conflitti
-//  5. Agente Travel Planner: genera suggerimenti
-//  6. Salva in trip_suggestions (DELETE + INSERT)
-//  7. Supabase Realtime notifica automaticamente la UI
 // ============================================================
 
 import { NextResponse }              from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { fetchForecast }             from '@/lib/weather'
 import { runMeteorologoAgent, runTravelPlannerWeatherAgent } from '@/lib/agents'
-import type { Database }             from '@/types/database'
 
-// Client con service role: può bypassare RLS per scrivere weather_cache e trip_suggestions
+// Client senza generic <Database>: il service-role ha bisogno di accedere
+// alle nuove tabelle (weather_cache, trip_suggestions) non ancora nel tipo.
+// I tipi di ritorno vengono dichiarati inline dove necessario.
 function getServiceClient() {
-  return createClient<Database>(
+  return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
+}
+
+// Tipi locali per le query parziali
+type DayRow  = { trip_id: string; date: string | null; date_end: string | null }
+type TripRow = { id: string; name: string; destination: string | null }
+type ActivityRow = {
+  title: string; notes: string | null; location: string | null
+  time_start: string | null; activity_date: string | null
 }
 
 export async function GET(request: Request) {
@@ -41,20 +41,20 @@ export async function GET(request: Request) {
 
   try {
     // ── 1. Trova i viaggi con tappe nei prossimi 2 giorni ─────
-    const today    = new Date()
+    const today     = new Date()
     const inTwoDays = new Date(today)
     inTwoDays.setDate(today.getDate() + 2)
     const todayStr     = today.toISOString().split('T')[0]
     const inTwoDaysStr = inTwoDays.toISOString().split('T')[0]
 
-    const { data: days } = await supabase
+    const { data: daysRaw } = await supabase
       .from('days')
       .select('trip_id, date, date_end')
       .or(`date.gte.${todayStr},date_end.gte.${todayStr}`)
       .lte('date', inTwoDaysStr)
-      .returns<Array<{ trip_id: string; date: string | null; date_end: string | null }>>()
 
-    if (!days || days.length === 0) {
+    const days = (daysRaw ?? []) as DayRow[]
+    if (days.length === 0) {
       return NextResponse.json({ ok: true, message: 'Nessun viaggio nei prossimi 2 giorni' })
     }
 
@@ -64,12 +64,13 @@ export async function GET(request: Request) {
     for (const tripId of tripIds) {
       try {
         // ── 2. Carica info viaggio + destinazione ──────────────
-        const { data: trip } = await supabase
+        const { data: tripRaw } = await supabase
           .from('trips')
           .select('id, name, destination')
           .eq('id', tripId)
           .single()
 
+        const trip = tripRaw as TripRow | null
         if (!trip?.destination) {
           results.push(`[${tripId}] Skipped: nessuna destinazione`)
           continue
@@ -105,12 +106,13 @@ export async function GET(request: Request) {
         )
 
         // ── 5. Carica attività del viaggio ─────────────────────
-        const { data: activities } = await supabase
+        const { data: activitiesRaw } = await supabase
           .from('activities')
           .select('title, notes, location, time_start, activity_date')
           .eq('trip_id', tripId)
 
-        if (!activities || activities.length === 0) {
+        const activities = (activitiesRaw ?? []) as ActivityRow[]
+        if (activities.length === 0) {
           results.push(`[${trip.name}] Nessuna attività — skip agenti`)
           continue
         }
@@ -137,15 +139,13 @@ export async function GET(request: Request) {
           .eq('trip_id', tripId)
 
         const suggestionsToInsert = [
-          // Aggiungi sempre un riepilogo meteo come primo elemento
           ...(meteoOutput.overall_summary ? [{
             trip_id:  tripId,
-            type:     'weather_alert',
+            type:     'weather_alert' as const,
             title:    '🌤️ Previsioni aggiornate',
             body:     meteoOutput.overall_summary,
             priority: 0,
           }] : []),
-          // Suggerimenti del Travel Planner
           ...plannerOutput.suggestions.map(s => ({
             trip_id:       tripId,
             type:          s.type,

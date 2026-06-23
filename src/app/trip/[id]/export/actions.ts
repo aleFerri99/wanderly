@@ -58,7 +58,7 @@ export async function generateExport(tripId: string): Promise<
     .from('trip_members').select('id').eq('trip_id', tripId).eq('user_id', user.id).single()
   if (!membership) return { error: 'Accesso negato' }
 
-  const [{ data: trip }, { data: days }, { data: actReviewsRaw }, { data: dayReviewsRaw }] =
+  const [tripRes, daysRes, actRevRes, dayRevRes] =
     await Promise.all([
       supabase.from('trips').select('*').eq('id', tripId).single(),
       supabase.from('days').select('*, activities(*)').eq('trip_id', tripId).order('position', { ascending: true }),
@@ -66,11 +66,17 @@ export async function generateExport(tripId: string): Promise<
       supabase.from('reviews').select('day_id, score').eq('trip_id', tripId).not('day_id', 'is', null),
     ])
 
+  const trip = tripRes.data
+  const days = daysRes.data
   if (!trip) return { error: 'Viaggio non trovato' }
 
+  // Cast esplicito per le select parziali con colonne nullable
+  const actReviewsRaw = (actRevRes.data ?? []) as Array<{ activity_id: string | null; score: number }>
+  const dayReviewsRaw = (dayRevRes.data ?? []) as Array<{ day_id: string | null; score: number }>
+
   // Calcola le medie (no testi, solo punteggi aggregati)
-  const actAvg = avgMap((actReviewsRaw ?? []).map(r => ({ id: r.activity_id!, score: r.score })))
-  const dayAvg = avgMap((dayReviewsRaw ?? []).map(r => ({ id: r.day_id!, score: r.score })))
+  const actAvg = avgMap(actReviewsRaw.map(r => ({ id: r.activity_id!, score: r.score })))
+  const dayAvg = avgMap(dayReviewsRaw.map(r => ({ id: r.day_id!, score: r.score })))
 
   const exportData: ExportTrip = {
     wanderly_version: '1.0',

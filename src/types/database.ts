@@ -192,14 +192,21 @@ export interface PresenceUser {
 export type Database = {
   public: {
     Tables: {
-      profiles:     { Row: Profile;  Insert: Omit<Profile, 'created_at' | 'updated_at'>;  Update: Partial<Omit<Profile, 'id' | 'created_at'>> }
-      trips:        { Row: Trip;     Insert: Omit<Trip, 'id' | 'invite_code' | 'created_at' | 'updated_at'>; Update: Partial<Omit<Trip, 'id' | 'created_at' | 'invite_code'>> }
-      trip_members: { Row: TripMember; Insert: Omit<TripMember, 'id' | 'joined_at'>; Update: Pick<TripMember, 'role'> }
-      days:         { Row: Day;      Insert: Omit<Day, 'id' | 'created_at' | 'updated_at'>;  Update: Partial<Omit<Day, 'id' | 'trip_id' | 'created_at'>> }
-      activities:   { Row: Activity; Insert: Omit<Activity, 'id' | 'created_at' | 'updated_at'>; Update: Partial<Omit<Activity, 'id' | 'trip_id' | 'day_id' | 'created_at'>> }
-      reviews:      { Row: Review;   Insert: Omit<Review, 'id' | 'created_at' | 'updated_at'>;  Update: Partial<Omit<Review, 'id' | 'user_id' | 'trip_id' | 'created_at'>> }
-      expenses:     { Row: Expense;  Insert: Omit<Expense, 'id' | 'created_at' | 'updated_at'>; Update: Partial<Omit<Expense, 'id' | 'trip_id' | 'created_at'>> }
-      notes:        { Row: Note;     Insert: Omit<Note, 'id' | 'created_at' | 'updated_at'>;    Update: Partial<Omit<Note, 'id' | 'trip_id' | 'created_at'>> }
+      // ── Fase 1-2 ──────────────────────────────────────────────
+      profiles:           { Row: Profile;           Insert: Omit<Profile, 'created_at' | 'updated_at'>;           Update: Partial<Omit<Profile, 'id' | 'created_at'>> }
+      trips:              { Row: Trip;              Insert: Omit<Trip, 'id' | 'invite_code' | 'created_at' | 'updated_at'>; Update: Partial<Omit<Trip, 'id' | 'created_at' | 'invite_code'>> }
+      trip_members:       { Row: TripMember;        Insert: Omit<TripMember, 'id' | 'joined_at'>;                Update: Pick<TripMember, 'role'> }
+      days:               { Row: Day;               Insert: Omit<Day, 'id' | 'created_at' | 'updated_at'>;       Update: Partial<Omit<Day, 'id' | 'trip_id' | 'created_at'>> }
+      activities:         { Row: Activity;          Insert: Omit<Activity, 'id' | 'created_at' | 'updated_at'>;  Update: Partial<Omit<Activity, 'id' | 'trip_id' | 'day_id' | 'created_at'>> }
+      reviews:            { Row: Review;            Insert: Omit<Review, 'id' | 'created_at' | 'updated_at'>;    Update: Partial<Omit<Review, 'id' | 'user_id' | 'trip_id' | 'created_at'>> }
+      expenses:           { Row: Expense;           Insert: Omit<Expense, 'id' | 'created_at' | 'updated_at'>;   Update: Partial<Omit<Expense, 'id' | 'trip_id' | 'created_at'>> }
+      notes:              { Row: Note;              Insert: Omit<Note, 'id' | 'created_at' | 'updated_at'>;      Update: Partial<Omit<Note, 'id' | 'trip_id' | 'created_at'>> }
+      // ── Fase 3 ───────────────────────────────────────────────
+      weather_cache:      { Row: WeatherCache;      Insert: Omit<WeatherCache, 'id' | 'fetched_at'>;             Update: Partial<Omit<WeatherCache, 'id'>> }
+      trip_suggestions:   { Row: TripSuggestion;    Insert: Omit<TripSuggestion, 'id' | 'created_at'>;           Update: Partial<Omit<TripSuggestion, 'id' | 'trip_id' | 'created_at'>> }
+      traveler_profiles:  { Row: TravelerProfile;   Insert: Omit<TravelerProfile, 'id' | 'generated_at'>;        Update: Partial<Omit<TravelerProfile, 'id' | 'generated_at'>> }
+      points_log:         { Row: PointsLog;         Insert: Omit<PointsLog, 'id' | 'created_at'>;               Update: never }
+      daily_votes:        { Row: DailyVote;         Insert: Omit<DailyVote, 'id' | 'created_at'>;               Update: never }
     }
     Functions: {
       join_trip_by_code:  { Args: { p_invite_code: string }; Returns: string }

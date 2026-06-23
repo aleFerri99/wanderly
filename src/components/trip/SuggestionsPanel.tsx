@@ -3,6 +3,7 @@
 import { useState, useEffect, useTransition } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { addActivity } from '@/app/trip/[id]/timeline/actions'
+import { refreshTripSuggestions } from '@/app/trip/[id]/suggestions/actions'
 
 interface Suggestion {
   id:            string
@@ -89,11 +90,7 @@ export function SuggestionsPanel({ tripId, currentUserId, defaultDayId }: Props)
 
   async function handleRefresh() {
     setRefreshing(true)
-    try {
-      await fetch(`/api/cron/weather`, {
-        headers: { 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET ?? ''}` }
-      })
-    } catch {}
+    await refreshTripSuggestions(tripId)
     setRefreshing(false)
   }
 

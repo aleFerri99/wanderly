@@ -30,6 +30,9 @@ type ActivityRow = {
 
 export async function GET(request: Request) {
   // ── Autenticazione cron ────────────────────────────────────
+  // Vercel invia Authorization: Bearer {CRON_SECRET} automaticamente
+  // se la variabile è impostata nelle env. Il check è opzionale:
+  // se CRON_SECRET non è impostata, il cron è pubblico (ma idempotente).
   const authHeader = request.headers.get('Authorization')
   const secret     = process.env.CRON_SECRET
   if (secret && authHeader !== `Bearer ${secret}`) {

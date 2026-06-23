@@ -52,6 +52,7 @@ export async function GET(request: Request) {
       .select('trip_id, date, date_end')
       .or(`date.gte.${todayStr},date_end.gte.${todayStr}`)
       .lte('date', inTwoDaysStr)
+      .returns<Array<{ trip_id: string; date: string | null; date_end: string | null }>>()
 
     if (!days || days.length === 0) {
       return NextResponse.json({ ok: true, message: 'Nessun viaggio nei prossimi 2 giorni' })

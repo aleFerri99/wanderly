@@ -66,8 +66,8 @@ export async function generateExport(tripId: string): Promise<
       supabase.from('reviews').select('day_id, score').eq('trip_id', tripId).not('day_id', 'is', null),
     ])
 
-  const trip = tripRes.data
-  const days = daysRes.data
+  const trip = tripRes.data as import('@/types/database').Trip | null
+  const days = daysRes.data as Array<import('@/types/database').DayWithActivities> | null
   if (!trip) return { error: 'Viaggio non trovato' }
 
   // Cast esplicito per le select parziali con colonne nullable

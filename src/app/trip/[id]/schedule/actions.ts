@@ -354,7 +354,8 @@ export async function scheduleDayActivities(
     if (act.lat != null && act.lng != null) continue
     const coords = await geocodeActivity(act.location?.trim() || act.title, dayTitle)
     if (coords) {
-      await supabase.from('activities').update({ lat: coords.lat, lng: coords.lng }).eq('id', act.id)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).from('activities').update({ lat: coords.lat, lng: coords.lng }).eq('id', act.id)
       act.lat = coords.lat; act.lng = coords.lng
     }
   }
@@ -396,7 +397,8 @@ export async function scheduleDayActivities(
     const upd: Record<string, unknown> = { time_start: item.time_start, updated_at: new Date().toISOString() }
     if (item.duration_minutes) upd.duration_minutes = item.duration_minutes
     if (targetDate) upd.activity_date = targetDate
-    await supabase.from('activities').update(upd).eq('id', act.id)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from('activities').update(upd).eq('id', act.id)
   }
 
   revalidatePath(`/trip/${tripId}`)

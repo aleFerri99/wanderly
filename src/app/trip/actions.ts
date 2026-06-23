@@ -65,8 +65,9 @@ export async function joinTrip(formData: FormData) {
 // ─── AGGIORNA VIAGGIO ─────────────────────────────────────────
 export async function updateTrip(tripId: string, formData: FormData) {
   const supabase = await createServerSupabaseClient()
-
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any
+  const { error } = await db
     .from('trips')
     .update({
       name: formData.get('name') as string,

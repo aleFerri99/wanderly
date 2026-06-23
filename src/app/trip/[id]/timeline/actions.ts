@@ -1,54 +1,41 @@
-// ============================================================
-// src/app/trip/[id]/timeline/actions.ts
-// Server Actions per giorni e attività
-// ============================================================
 'use server'
 
 import { revalidatePath } from 'next/cache'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
+// In strict TypeScript build il client tipizzato non accetta correttamente
+// .insert()/.update() con il nostro Database manuale → usiamo `db` (as any)
+// per le mutazioni; il client tipizzato rimane per .select() e auth.
+
 // ─── GIORNI ───────────────────────────────────────────────────
 
 export async function addDay(
-  tripId: string,
-  title: string,
-  date: string | null,
-  dateEnd: string | null,
-  position: number
+  tripId: string, title: string, date: string | null,
+  dateEnd: string | null, position: number
 ) {
   const supabase = await createServerSupabaseClient()
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const db = supabase as any
+  const { data, error } = await db
     .from('days')
     .insert({ trip_id: tripId, title, date: date || null, date_end: dateEnd || null, position })
-    .select()
-    .single()
-
-  if (error) return { error: (error as { message: string }).message }
+    .select().single()
+  if (error) return { error: error.message }
   revalidatePath(`/trip/${tripId}`)
   return { data }
 }
 
 export async function updateDay(
-  tripId: string,
-  dayId: string,
-  title: string,
-  date: string | null,
-  dateEnd: string | null
+  tripId: string, dayId: string, title: string,
+  date: string | null, dateEnd: string | null
 ) {
   const supabase = await createServerSupabaseClient()
-
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any
+  const { error } = await db
     .from('days')
-    .update({
-      title,
-      date: date || null,
-      date_end: dateEnd || null,
-      updated_at: new Date().toISOString(),
-    })
+    .update({ title, date: date || null, date_end: dateEnd || null, updated_at: new Date().toISOString() })
     .eq('id', dayId)
-
   if (error) return { error: error.message }
   revalidatePath(`/trip/${tripId}`)
   return { success: true }
@@ -56,12 +43,7 @@ export async function updateDay(
 
 export async function deleteDay(tripId: string, dayId: string) {
   const supabase = await createServerSupabaseClient()
-
-  const { error } = await supabase
-    .from('days')
-    .delete()
-    .eq('id', dayId)
-
+  const { error } = await supabase.from('days').delete().eq('id', dayId)
   if (error) return { error: error.message }
   revalidatePath(`/trip/${tripId}`)
   return { success: true }
@@ -70,20 +52,15 @@ export async function deleteDay(tripId: string, dayId: string) {
 // ─── ATTIVITÀ ─────────────────────────────────────────────────
 
 export async function addActivity(
-  tripId: string,
-  dayId: string,
-  title: string,
-  timeStart: string | null,
-  notes: string | null,
-  location: string | null,
-  activityDate: string | null,
-  position: number
+  tripId: string, dayId: string, title: string,
+  timeStart: string | null, notes: string | null,
+  location: string | null, activityDate: string | null, position: number
 ) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const db = supabase as any
+  const { data, error } = await db
     .from('activities')
     .insert({
       trip_id: tripId, day_id: dayId, title,
@@ -91,32 +68,27 @@ export async function addActivity(
       location: location || null, activity_date: activityDate || null,
       position, created_by: user?.id ?? null,
     })
-    .select()
-    .single()
-
-  if (error) return { error: (error as { message: string }).message }
+    .select().single()
+  if (error) return { error: error.message }
   revalidatePath(`/trip/${tripId}`)
   return { data }
 }
 
 export async function updateActivity(
-  tripId: string,
-  activityId: string,
+  tripId: string, activityId: string,
   fields: {
-    title?: string
-    notes?: string | null
-    time_start?: string | null
-    location?: string | null
-    activity_date?: string | null
+    title?: string; notes?: string | null; time_start?: string | null
+    location?: string | null; activity_date?: string | null
+    duration_minutes?: number | null
   }
 ) {
   const supabase = await createServerSupabaseClient()
-
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any
+  const { error } = await db
     .from('activities')
     .update({ ...fields, updated_at: new Date().toISOString() })
     .eq('id', activityId)
-
   if (error) return { error: error.message }
   revalidatePath(`/trip/${tripId}`)
   return { success: true }
@@ -125,12 +97,12 @@ export async function updateActivity(
 export async function toggleActivity(tripId: string, activityId: string, currentStatus: string) {
   const supabase = await createServerSupabaseClient()
   const newStatus = currentStatus === 'done' ? 'todo' : 'done'
-
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any
+  const { error } = await db
     .from('activities')
     .update({ status: newStatus, updated_at: new Date().toISOString() })
     .eq('id', activityId)
-
   if (error) return { error: error.message }
   revalidatePath(`/trip/${tripId}`)
   return { success: true, newStatus }
@@ -138,12 +110,7 @@ export async function toggleActivity(tripId: string, activityId: string, current
 
 export async function deleteActivity(tripId: string, activityId: string) {
   const supabase = await createServerSupabaseClient()
-
-  const { error } = await supabase
-    .from('activities')
-    .delete()
-    .eq('id', activityId)
-
+  const { error } = await supabase.from('activities').delete().eq('id', activityId)
   if (error) return { error: error.message }
   revalidatePath(`/trip/${tripId}`)
   return { success: true }

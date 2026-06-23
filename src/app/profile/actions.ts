@@ -17,7 +17,9 @@ export async function updateProfile(formData: FormData) {
   const languages       = formData.getAll('languages')       as string[]
   const travelInterests = formData.getAll('travelInterests') as string[]
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any
+  const { error } = await db
     .from('profiles')
     .update({
       full_name:        formData.get('fullName')    as string || null,

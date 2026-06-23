@@ -326,6 +326,7 @@ export function DayBlock({ day, tripId, isToday, currentUserId, members, default
                         tripId={tripId}
                         isLast={i === arr.length - 1}
                         currentUserId={currentUserId}
+                        members={members}
                       />
                     ))}
                   </div>
@@ -345,6 +346,7 @@ export function DayBlock({ day, tripId, isToday, currentUserId, members, default
                     tripId={tripId}
                     isLast={i === arr.length - 1 && addingForDate === null}
                     currentUserId={currentUserId}
+                    members={members}
                   />
                 ))}
 

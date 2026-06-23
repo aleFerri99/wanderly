@@ -39,7 +39,9 @@ export async function addExpense(
   const rate = await getEurRate(currency)
   const amountEur = Math.round(amount * rate * 100) / 100
 
-  const { error } = await supabase.from('expenses').insert({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any
+  const { error } = await db.from('expenses').insert({
     trip_id: tripId,
     paid_by: user.id,
     description,

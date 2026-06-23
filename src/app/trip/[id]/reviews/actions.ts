@@ -26,7 +26,8 @@ export async function upsertReview(
 
   const conflictCol = activityId ? 'user_id,activity_id' : 'user_id,day_id'
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('reviews')
     .upsert(record, { onConflict: conflictCol })
 

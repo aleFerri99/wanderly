@@ -1,0 +1,108 @@
+/* ============================================================
+   trip.css — Layout pagina viaggio (scaffold M3)
+   TopAppBar (56px) + SubTabBar (48px se Itinerario) + BottomNav (80px)
+   ============================================================ */
+
+.trip-page {
+  min-height: 100dvh;
+  background: var(--md-background, #F3F0FF);
+  /* Offset per TopAppBar fixed */
+  padding-top: var(--top-app-bar-h, 56px);
+  /* Offset per BottomNav fixed */
+  padding-bottom: var(--bottom-nav-h, 80px);
+}
+
+/* ── Sub-tab bar (Itinerario: Timeline | Mappa | Spese | Note | Gruppo) ── */
+.trip-sub-tabs {
+  position: sticky;
+  top: var(--top-app-bar-h, 56px);
+  z-index: 100;
+  background: var(--md-surface, #FAFAFA);
+  border-bottom: 1px solid var(--md-outline-variant, #D4D4D8);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  height: var(--sub-tab-bar-h, 48px);
+}
+.trip-sub-tabs::-webkit-scrollbar { display: none; }
+
+.trip-sub-tab {
+  flex: 1; min-width: 72px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px; padding: 6px 4px;
+  font-size: 0.6875rem; font-weight: 600;
+  color: var(--md-on-surface-variant, #52525B);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.trip-sub-tab span:first-child { font-size: 0.9rem; line-height: 1; }
+.trip-sub-tab-active {
+  color: var(--md-primary, #7C3AED);
+  border-bottom-color: var(--md-primary, #7C3AED);
+}
+
+/* ── Hero image ── */
+.trip-hero { position: relative; height: 180px; overflow: hidden; background: linear-gradient(135deg, var(--md-primary-container, #EDE9FE), var(--md-tertiary-container, #CCFBF1)); }
+.trip-hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
+.trip-hero-placeholder { width: 100%; height: 100%; }
+
+/* Overlay a doppio gradiente:
+   1. Vignette sinistra  → scurisce dove c'è il testo (left → 70% trasparente)
+   2. Scrim inferiore    → rinforza la leggibilità dal basso (forte) verso l'alto (svanisce) */
+.trip-hero-overlay {
+  position: absolute; inset: 0;
+  padding: 1rem;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  background:
+    linear-gradient(to right,  rgba(0,0,0,0.52) 0%, rgba(0,0,0,0.18) 55%, transparent 80%),
+    linear-gradient(to top,    rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.30) 35%, transparent 65%);
+}
+.trip-hero-overlay h1 {
+  font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0 0 0.25rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.45);
+}
+.trip-hero-overlay p {
+  font-size: 0.8rem; color: rgba(255,255,255,0.92); margin: 0 0 0.125rem;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+/* ── Presenza live ── */
+.trip-presence { padding: 0.625rem 1rem 0; background: var(--md-surface, #FAFAFA); }
+
+/* ── Main content ── */
+.trip-main {
+  max-width: 600px; margin: 0 auto;
+  padding: 1rem 1rem 1.5rem;
+}
+/* Per AI Hub e Classifica: non hanno il sub-tab bar, quindi meno offset */
+.trip-main-full {
+  padding-top: 1.25rem;
+}
+
+/* ── Sezioni generali ── */
+.section { margin-bottom: 1.25rem; }
+.section-title {
+  font-size: 0.9375rem; font-weight: 700;
+  color: var(--md-on-surface, #18181B);
+  margin: 0 0 0.875rem;
+}
+.gruppo-tab { display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* ── Membres list (Gruppo tab) ── */
+.members-list { background: var(--md-surface, #FAFAFA); border-radius: var(--md-radius-xl, 24px); border: 1px solid var(--md-outline-variant, #D4D4D8); overflow: hidden; }
+.member-row { display: flex; align-items: center; gap: 12px; padding: 0.875rem 1rem; border-bottom: 1px solid var(--md-outline-variant, #D4D4D8); }
+.member-row:last-child { border-bottom: none; }
+.member-avatar-wrap { flex-shrink: 0; }
+.member-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+.member-initials { background: var(--md-primary, #7C3AED); display: flex; align-items: center; justify-content: center; font-size: 0.8125rem; font-weight: 700; color: #fff; }
+.member-info { flex: 1; min-width: 0; }
+.member-name { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 600; color: var(--md-on-surface, #18181B); }
+.member-username { font-size: 0.75rem; color: var(--md-on-surface-variant, #52525B); display: block; }
+.badge-me { background: var(--md-primary-container, #EDE9FE); color: var(--md-primary, #7C3AED); font-size: 0.65rem; padding: 2px 6px; border-radius: var(--md-radius-full); font-weight: 700; }
+.member-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.role-badge { font-size: 0.75rem; padding: 3px 10px; border-radius: var(--md-radius-full); font-weight: 600; }
+.role-owner  { background: var(--md-secondary-container, #FEF3C7); color: var(--md-secondary, #D97706); }
+.role-editor { background: var(--md-primary-container, #EDE9FE);   color: var(--md-primary, #7C3AED); }
+.role-viewer { background: var(--md-surface-container-low, #F4F4F5); color: var(--md-on-surface-variant, #52525B); }

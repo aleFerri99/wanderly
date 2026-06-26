@@ -1,0 +1,170 @@
+/* ============================================================
+   Dashboard — Material Design 3  (M3 scaffold: TopAppBar + BottomNav)
+   ============================================================ */
+
+.dashboard {
+  min-height: 100dvh;
+  background: var(--md-background, #F3F0FF);
+  padding-top: var(--top-app-bar-h, 56px);
+  padding-bottom: var(--bottom-nav-h, 80px);
+}
+
+/* ── Hero greeting ── */
+.dash-hero {
+  background: linear-gradient(135deg, var(--md-primary-container, #EDE9FE) 0%, var(--md-tertiary-container, #CCFBF1) 100%);
+  padding: 1.5rem 1rem 1.25rem;
+}
+.dash-hero-inner { max-width: 600px; margin: 0 auto; }
+.dash-hi {
+  font-size: 0.9rem; font-weight: 500;
+  color: var(--md-primary, #7C3AED);
+  margin: 0 0 0.25rem;
+}
+.dash-title {
+  font-size: 1.625rem; font-weight: 700;
+  color: var(--md-on-surface, #18181B);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* ── Main content ── */
+.dash-main {
+  max-width: 600px; margin: 0 auto;
+  padding: 1.25rem 1rem 1.5rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+
+/* ── CTA Actions ── */
+.dash-actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+}
+
+/* Pulsanti nei modal (dash-btn inoltrato dai componenti) */
+.dash-btn {
+  width: 100%; padding: 0.75rem 1rem;
+  border-radius: var(--md-radius-full);
+  font-size: 0.9rem; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.1s;
+  border: none;
+}
+.dash-btn:active { transform: scale(0.97); }
+
+.dash-btn-primary {
+  background: var(--md-primary, #7C3AED);
+  color: var(--md-on-primary, #FFFFFF);
+  box-shadow: var(--md-elevation-1);
+}
+.dash-btn-primary:hover { box-shadow: var(--md-elevation-2); }
+
+.dash-btn-outlined {
+  background: transparent;
+  color: var(--md-primary, #7C3AED);
+  border: 2px solid var(--md-primary, #7C3AED) !important;
+  box-shadow: none;
+}
+.dash-btn-outlined:hover { background: var(--md-primary-container, #EDE9FE); }
+
+/* ── Import link ── */
+.dash-import-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 0.7rem 1rem;
+  background: var(--md-surface, #FAFAFA);
+  border: 1.5px solid var(--md-outline-variant, #D4D4D8);
+  border-radius: var(--md-radius-full);
+  font-size: 0.875rem; font-weight: 600;
+  color: var(--md-on-surface-variant, #52525B);
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.dash-import-btn:hover {
+  background: var(--md-surface-container-low, #F4F4F5);
+  border-color: var(--md-primary, #7C3AED);
+  color: var(--md-primary, #7C3AED);
+}
+
+/* ── Section label ── */
+.dash-section-label {
+  font-size: 0.8125rem; font-weight: 700;
+  color: var(--md-on-surface-variant, #52525B);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin: 0.5rem 0 0;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center; padding: 3rem 1rem;
+  background: var(--md-surface, #FAFAFA);
+  border-radius: var(--md-radius-xl, 24px);
+  border: 2px dashed var(--md-outline-variant, #D4D4D8);
+}
+.empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+.empty-state h2 {
+  font-size: 1.125rem; font-weight: 700;
+  color: var(--md-on-surface, #18181B);
+  margin: 0 0 0.5rem;
+}
+.empty-state p {
+  color: var(--md-on-surface-variant, #52525B);
+  font-size: 0.9rem; max-width: 260px; margin: 0 auto; line-height: 1.5;
+}
+
+/* ── Trip grid ── */
+.trip-grid { display: flex; flex-direction: column; gap: 0.875rem; }
+
+/* ── Trip Card — M3 Elevated Card ── */
+.trip-card {
+  background: var(--md-surface, #FAFAFA);
+  border-radius: var(--md-radius-xl, 24px);
+  border: none;
+  box-shadow: var(--md-elevation-1);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.trip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--md-elevation-2);
+}
+.trip-card:active { transform: scale(0.99); }
+
+/* Cover — proporzioni verticali 3:4 */
+.trip-cover { width: 96px; flex-shrink: 0; }
+.trip-cover img { width: 100%; height: 100%; object-fit: cover; }
+.trip-cover-placeholder {
+  width: 100%; height: 100%; min-height: 120px;
+  background: linear-gradient(135deg, var(--md-primary-container, #EDE9FE), var(--md-tertiary-container, #CCFBF1));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.25rem;
+}
+
+/* Info */
+.trip-info { padding: 1rem; flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
+.trip-info h3 {
+  font-size: 1rem; font-weight: 700;
+  color: var(--md-on-surface, #18181B);
+  margin: 0 0 0.3rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.trip-dest { font-size: 0.8rem; color: var(--md-primary, #7C3AED); margin: 0 0 0.2rem; font-weight: 500; }
+.trip-dates { font-size: 0.775rem; color: var(--md-on-surface-variant, #52525B); margin: 0 0 0.625rem; }
+
+/* Footer: avatars + member count */
+.trip-footer { display: flex; align-items: center; justify-content: space-between; }
+.member-avatars { display: flex; }
+.member-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--md-primary, #7C3AED);
+  border: 2.5px solid var(--md-surface, #FAFAFA);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700; color: #fff;
+  margin-left: -6px;
+}
+.member-avatar:first-child { margin-left: 0; }
+.member-more { background: var(--md-surface-container, #EEECF8); color: var(--md-on-surface-variant, #52525B); }
+.trip-member-count {
+  font-size: 0.75rem; font-weight: 600;
+  color: var(--md-on-surface-variant, #52525B);
+}

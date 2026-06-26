@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/weather",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/daily-mvp",
+      "schedule": "0 20 * * *"
+    }
+  ]
+}

@@ -1,0 +1,267 @@
+/* ============================================================
+   src/app/globals.css
+   Reset + variabili base
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   M3 Design Tokens — Wanderly Electric  (Option A: Violet + Amber + Teal)
+   Palette confermata: fresca, giovanile, energica per il gruppo
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  /* ── Font ── */
+  --font: var(--font-sans, 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif);
+
+  /* ── Primary: Electric Violet ── */
+  --md-primary:              #7C3AED;
+  --md-on-primary:           #FFFFFF;
+  --md-primary-container:    #EDE9FE;
+  --md-on-primary-container: #2E0EA0;
+
+  /* ── Secondary: Amber Gold (gamification, rewards) ── */
+  --md-secondary:              #D97706;
+  --md-on-secondary:           #FFFFFF;
+  --md-secondary-container:    #FEF3C7;
+  --md-on-secondary-container: #451A00;
+
+  /* ── Tertiary: Tropical Teal (completamento, success) ── */
+  --md-tertiary:              #0D9488;
+  --md-on-tertiary:           #FFFFFF;
+  --md-tertiary-container:    #CCFBF1;
+  --md-on-tertiary-container: #042F2E;
+
+  /* ── Success (legacy brand green — stati done) ── */
+  --md-success:           #1D9E75;
+  --md-success-container: #B2F0DB;
+  --md-on-success:        #FFFFFF;
+
+  /* ── Error ── */
+  --md-error:           #DC2626;
+  --md-error-container: #FEE2E2;
+  --md-on-error:        #FFFFFF;
+
+  /* ── Surface & Background ── */
+  --md-background:               #F3F0FF;   /* lavender mist — tinta viola appena percettibile */
+  --md-surface:                  #FAFAFA;   /* card, dialoghi */
+  --md-surface-container-lowest: #FFFFFF;
+  --md-surface-container-low:    #F4F4F5;   /* input, sezioni secondarie */
+  --md-surface-container:        #EEECF8;   /* tinted surface (M3 stile) */
+  --md-surface-container-high:   #E4E1F5;
+
+  /* ── Testo e icone ── */
+  --md-on-surface:         #18181B;
+  --md-on-surface-variant: #52525B;
+  --md-outline:            #A1A1AA;
+  --md-outline-variant:    #D4D4D8;
+
+  /* ── Elevazione M3 (tintate con il primario) ── */
+  --md-elevation-1: 0 1px 2px rgba(124,58,237,.08), 0 1px 3px 1px rgba(124,58,237,.04);
+  --md-elevation-2: 0 1px 2px rgba(124,58,237,.12), 0 2px 6px 2px rgba(124,58,237,.08);
+  --md-elevation-3: 0 4px 8px 3px rgba(124,58,237,.10), 0 1px 3px rgba(124,58,237,.08);
+
+  /* ── Shape tokens (angoli) ── */
+  --md-radius-xs:   4px;
+  --md-radius-s:    8px;
+  --md-radius-m:    12px;
+  --md-radius-l:    16px;
+  --md-radius-xl:   24px;   /* card attività, bottom sheet */
+  --md-radius-xxl:  28px;   /* dialoghi */
+  --md-radius-full: 9999px; /* pill: chips, badge, FAB circolare */
+
+  /* ── Layout ── */
+  --top-app-bar-h:  56px;
+  --sub-tab-bar-h:  48px;
+  --bottom-nav-h:   80px;
+
+  /* ── Legacy aliases (retrocompatibilità componenti esistenti) ── */
+  --color-brand:       #7C3AED;   /* era #1D9E75 — aggiornato al nuovo primary */
+  --color-brand-dark:  #5B21B6;
+  --color-brand-light: #EDE9FE;
+}
+
+html {
+  font-family: var(--font);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--md-on-surface);
+  background: var(--md-background);
+  line-height: 1.5;
+  /* Previeni overscroll bounce su iOS */
+  overscroll-behavior: none;
+}
+
+input, button, select, textarea {
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Smooth scrolling nativo */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar sottile */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d0d0cb;
+  border-radius: 99px;
+}
+
+/* Focus ring accessibile */
+:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+/* Riduzione moto */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── DateInput component ─────────────────────────────────────────
+   Stili globali qui invece di <style jsx global> nel componente:
+   <style jsx global> dentro client component può rompere lo scope
+   di altri componenti styled-jsx (es. mappe con height dipendente da jsx). */
+.di-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+.di-text {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 0.65rem 2.2rem 0.65rem 0.875rem;
+  border: 1px solid #e0e0db;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  background: #fafaf8;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+  box-sizing: border-box;
+}
+.di-text:focus {
+  border-color: #1D9E75;
+  box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.12);
+}
+.di-text::placeholder { color: #b0b0aa; }
+.di-text:disabled     { opacity: 0.6; cursor: not-allowed; background: #f0f0ec; }
+
+.di-compact .di-text {
+  padding: 0.5rem 2rem 0.5rem 0.6rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+}
+.di-native {
+  position: absolute;
+  right: 0; top: 0;
+  width: 2rem; height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  border: none;
+  padding: 0;
+}
+.di-btn {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #9a9a94;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.di-btn:hover:not(:disabled) { color: #1D9E75; }
+.di-btn:disabled { cursor: not-allowed; opacity: 0.4; }
+
+/* ── TimeInput component ─────────────────────────────────────── */
+.ti-wrap   { position: relative; display: inline-flex; align-items: center; width: 108px; }
+.ti-text   {
+  width: 100%;
+  padding: 5px 2rem 5px 8px;
+  border: 1px solid #e0e0db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  background: #fafaf8;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ti-text:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,0.12); }
+.ti-text::placeholder { color: #b0b0aa; }
+.ti-text:disabled { opacity: 0.6; cursor: not-allowed; }
+.ti-native {
+  position: absolute; right: 0; top: 0;
+  width: 1.8rem; height: 100%;
+  opacity: 0; pointer-events: none;
+  border: none; padding: 0;
+}
+.ti-btn {
+  position: absolute; right: 6px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  padding: 0; color: #9a9a94;
+  transition: color 0.15s; line-height: 1;
+}
+.ti-btn:hover:not(:disabled) { color: #1D9E75; }
+.ti-btn:disabled { cursor: not-allowed; opacity: 0.4; }
+
+/* ── BottomBar globale ───────────────────────────────────────── */
+.btm-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-top: 1px solid #e8e8e4;
+  display: flex; align-items: stretch;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
+}
+.btm-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; padding: 0.625rem 0;
+  text-decoration: none; color: #6b6b6b;
+  transition: color 0.15s, background 0.15s;
+}
+.btm-btn:hover  { color: #1D9E75; background: #f8f7f4; }
+.btm-active     { color: #1D9E75 !important; }
+.btm-icon       { font-size: 1.35rem; line-height: 1; }
+.btm-label      { font-size: 0.65rem; font-weight: 500; }
+.btm-divider    { width: 1px; background: #e8e8e4; margin: 0.5rem 0; flex-shrink: 0; }
+.btm-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #1D9E75; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; overflow: hidden; flex-shrink: 0;
+}
+.btm-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }

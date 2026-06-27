@@ -37,9 +37,9 @@ async function generateQuestions(destination: string): Promise<TriviaQuestion[]>
 
   const models  = ['llama-3.3-70b-versatile', 'llama-3.1-70b-versatile', 'llama-3.1-8b-instant']
   const system  = 'Sei un esperto di quiz per turisti. Rispondi SOLO con JSON valido, nessun markdown.'
-  const prompt  = `Genera 5 domande a risposta multipla su ${destination}.
+  const prompt  = `Genera 10 domande a risposta multipla su ${destination}.
 Argomenti: storia, cultura, gastronomia, geografia, curiosità locali.
-JSON richiesto (array di 5):
+JSON richiesto (array di 10):
 [{"q":"testo domanda","opts":["A","B","C","D"],"correct_idx":0}]
 correct_idx è l'indice 0-3 della risposta corretta. Rendi le domande divertenti per chi visita ${destination}.`
 
@@ -67,8 +67,8 @@ correct_idx è l'indice 0-3 della risposta corretta. Rendi le domande divertenti
         ? parsed
         : (parsed.questions ?? parsed.trivia ?? Object.values(parsed)[0])
 
-      if (Array.isArray(arr) && arr.length >= 5) {
-        return arr.slice(0, 5).map((q: { q?: string; question?: string; opts?: string[]; options?: string[]; correct_idx?: number; correct?: number }) => ({
+      if (Array.isArray(arr) && arr.length >= 10) {
+        return arr.slice(0, 10).map((q: { q?: string; question?: string; opts?: string[]; options?: string[]; correct_idx?: number; correct?: number }) => ({
           q:           String(q.q ?? q.question ?? ''),
           opts:        (q.opts ?? q.options ?? ['A', 'B', 'C', 'D']).slice(0, 4) as [string, string, string, string],
           correct_idx: Number(q.correct_idx ?? q.correct ?? 0),

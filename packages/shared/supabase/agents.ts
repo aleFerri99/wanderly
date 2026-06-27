@@ -422,7 +422,7 @@ Ricevi questi dati per ogni viaggiatore:
 - Età
 - Nazionalità
 - Lingue parlate
-- Interessi generali (testo libero)
+- Interessi generali
 - Interessi specifici per questo viaggio (testo libero)
 
 Devi restituire ESCLUSIVAMENTE un oggetto JSON valido, senza testo prima o dopo, senza backtick, senza markdown. Nessun commento. Solo JSON.

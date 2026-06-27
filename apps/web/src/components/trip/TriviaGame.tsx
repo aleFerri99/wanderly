@@ -197,7 +197,7 @@ export function TriviaGame({ tripId, currentUserId, members, destination }: Prop
           <div className="tg-idle-icon">🧠</div>
           <h3 className="tg-idle-title">Trivia del Luogo</h3>
           <p className="tg-idle-desc">
-            L'AI genera 5 domande su <strong>{destination || 'la vostra destinazione'}</strong>.
+            L'AI genera 10 domande su <strong>{destination || 'la vostra destinazione'}</strong>.
             Chi risponde correttamente più velocemente vince <strong>+15 punti</strong> in classifica!
           </p>
           <button className="tg-btn-primary" onClick={handleCreate}>
@@ -225,7 +225,7 @@ export function TriviaGame({ tripId, currentUserId, members, destination }: Prop
               <p className="tg-lobby-title">
                 {session.status === 'active' ? 'Partita in corso!' : 'Partita pronta!'}
               </p>
-              <p className="tg-lobby-dest">5 domande su <strong>{session.destination}</strong></p>
+              <p className="tg-lobby-dest">10 domande su <strong>{session.destination}</strong></p>
             </div>
           </div>
 

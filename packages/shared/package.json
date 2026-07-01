@@ -6,16 +6,9 @@
   "types": "./index.ts",
   "exports": {
     ".": "./index.ts",
-    "./constants": "./constants.ts",
-    "./countries": "./countries.ts",
-    "./badges": "./badges.ts",
-    "./types/database": "./types/database.ts",
-    "./supabase/gamification": "./supabase/gamification.ts",
-    "./supabase/mvp": "./supabase/mvp.ts",
-    "./supabase/trip-end": "./supabase/trip-end.ts",
-    "./supabase/badge-checker": "./supabase/badge-checker.ts",
-    "./supabase/weather": "./supabase/weather.ts",
-    "./supabase/agents": "./supabase/agents.ts"
+    "./types/*": "./types/*.ts",
+    "./supabase/*": "./supabase/*.ts",
+    "./*": "./*.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.46.0"

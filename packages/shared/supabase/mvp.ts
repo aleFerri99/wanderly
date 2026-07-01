@@ -1,8 +1,9 @@
 // ============================================================
 // src/lib/mvp.ts
-// Logica di risoluzione sondaggio MVP — condivisa tra:
-//   - /api/cron/daily-mvp (22:00 forzato, with malus)
-//   - castDailyVote (early-close quando tutti hanno votato, no malus)
+// Logica di risoluzione sondaggio MVP (lato web).
+// Usata solo per l'early-close: castDailyVote la chiama quando TUTTI hanno
+// votato (no malus). La risoluzione serale forzata alle 22:00 (with malus) è
+// ora gestita da pg_cron → resolve_one_mvp (migration 031).
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js'

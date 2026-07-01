@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Wanderly",
+    "slug": "wanderly",
+    "scheme": "wanderly",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#7C3AED"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.wanderly.app"
+    },
+    "android": {
+      "package": "com.wanderly.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#7C3AED"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "@react-native-community/datetimepicker"
+    ]
+  }
+}

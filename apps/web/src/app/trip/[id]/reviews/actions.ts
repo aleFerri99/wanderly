@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { awardPoints } from '@repo/shared/supabase/gamification'
+import { awardPoints } from '@repo/shared/supabase/gamification-server'
 import { checkBadgesOnReview } from '@repo/shared/supabase/badge-checker'
 
 export async function upsertReview(

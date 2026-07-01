@@ -6,7 +6,7 @@
 // Usa service role: scrive per conto di qualsiasi utente, bypassa RLS.
 // ============================================================
 
-import { getServiceClient } from './gamification'
+import { getServiceClient } from './gamification-server'
 import { runPackingAgent } from './agents'
 
 export async function seedPackingForUser(tripId: string, userId: string): Promise<void> {

@@ -2,7 +2,6 @@
 
 import { revalidatePath } from 'next/cache'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { awardPoints } from '@repo/shared/supabase/gamification'
 import type { GroupBoardItem } from '@repo/shared/types/database'
 
 type BoardItemType = 'nota' | 'task'
@@ -55,29 +54,12 @@ export async function completeBoardTask(
   itemId: string,
 ): Promise<{ error?: string; alreadyDone?: boolean }> {
   const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non autenticato' }
-
+  // RPC SECURITY DEFINER: assegna +5 ed elimina il task in modo atomico.
+  // Stessa funzione usata dal mobile → punti identici su entrambe le piattaforme.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const db = supabase as any
-
-  // Assegna +5 punti prima di eliminare la riga (non-blocking)
-  awardPoints(tripId, user.id, 'task_completed').catch(() => {})
-
-  // Elimina la riga direttamente invece di aggiornarla:
-  // - il Realtime riceve DELETE (più semplice da gestire nel client)
-  // - nessun revalidatePath → non disturba il ciclo di vita del componente React
-  // - guard .eq('is_completed', false): se qualcun altro ha già completato, la riga
-  //   non esiste più e il DELETE non trova nulla → count = 0 → alreadyDone
-  const { count } = await db
-    .from('group_board')
-    .delete({ count: 'exact' })
-    .eq('id', itemId)
-    .eq('trip_id', tripId)
-    .eq('is_completed', false)
-    .eq('content_type', 'task')
-
-  if ((count ?? 0) === 0) return { alreadyDone: true }
+  const { data, error } = await (supabase as any).rpc('complete_board_task', { p_item_id: itemId })
+  if (error) return { error: error.message }
+  if (data === false) return { alreadyDone: true }
   return {}
 }
 

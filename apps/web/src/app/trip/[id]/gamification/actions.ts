@@ -1,7 +1,7 @@
 'use server'
 
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { awardPoints, BATHROOM_DAILY_MAX, BATHROOM_COOLDOWN_SECONDS, POINTS } from '@repo/shared/supabase/gamification'
+import { BATHROOM_DAILY_MAX, BATHROOM_COOLDOWN_SECONDS } from '@repo/shared/supabase/gamification'
 import { resolveMvpForTrip } from '@repo/shared/supabase/mvp'
 import { applyExpenseBonusesForTrip } from '@repo/shared/supabase/trip-end'
 import { getAchievementsForTrip, checkBadgesOnTripEnd } from '@repo/shared/supabase/badge-checker'
@@ -157,48 +157,14 @@ export async function awardBathroom(
   targetUserId: string,
 ): Promise<{ success?: boolean; error?: string; cooldown?: boolean; maxReached?: boolean }> {
   const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non autenticato' }
-
-  const { data: mem } = await supabase
-    .from('trip_members').select('id').eq('trip_id', tripId).eq('user_id', user.id).single()
-  if (!mem) return { error: 'Accesso negato' }
-
-  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0)
+  // RPC SECURITY DEFINER: cap giornaliero + cooldown + insert, atomici nel DB.
+  // Stessa funzione usata dal mobile.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const db = supabase as any
-
-  // ── 1. Limite giornaliero: max 6 bagni per target ────────
-  const { count: dailyCount } = await db
-    .from('points_log')
-    .select('*', { count: 'exact', head: true })
-    .eq('trip_id', tripId)
-    .eq('user_id', targetUserId)
-    .eq('event_type', 'bathroom')
-    .gte('created_at', todayStart.toISOString())
-
-  if ((dailyCount ?? 0) >= BATHROOM_DAILY_MAX) {
-    return { maxReached: true, error: `Massimo ${BATHROOM_DAILY_MAX} bagni al giorno raggiunti!` }
-  }
-
-  // ── 2. Cooldown 30s anti-spam ─────────────────────────────
-  const cooldownThreshold = new Date(Date.now() - BATHROOM_COOLDOWN_SECONDS * 1000).toISOString()
-  const { data: recentClick } = await db
-    .from('points_log')
-    .select('created_at')
-    .eq('trip_id', tripId)
-    .eq('user_id', targetUserId)
-    .eq('event_type', 'bathroom')
-    .gte('created_at', cooldownThreshold)
-    .limit(1)
-    .maybeSingle()
-
-  if (recentClick) {
-    return { cooldown: true, error: `Aspetta ${BATHROOM_COOLDOWN_SECONDS}s prima di cliccare di nuovo!` }
-  }
-
-  // ── 3. Assegna i punti ────────────────────────────────────
-  await awardPoints(tripId, targetUserId, 'bathroom')
+  const { data, error } = await (supabase as any).rpc('award_bathroom', { p_trip_id: tripId, p_target: targetUserId })
+  if (error) return { error: error.message }
+  if (data === 'max')      return { maxReached: true, error: `Massimo ${BATHROOM_DAILY_MAX} bagni al giorno raggiunti!` }
+  if (data === 'cooldown') return { cooldown: true, error: `Aspetta ${BATHROOM_COOLDOWN_SECONDS}s prima di cliccare di nuovo!` }
+  if (data === 'denied')   return { error: 'Accesso negato' }
   return { success: true }
 }
 
@@ -216,42 +182,16 @@ export async function claimMorningSprint(
   tripId: string
 ): Promise<{ success?: boolean; error?: string; alreadyClaimed?: boolean; winnerId?: string }> {
   const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non autenticato' }
+  // Sprint disponibile solo dalle 06:00 (check lato client app)
+  if (new Date().getHours() < 6) return { error: 'La gara parte alle 06:00!' }
 
-  const { data: mem } = await supabase
-    .from('trip_members').select('id').eq('trip_id', tripId).eq('user_id', user.id).single()
-  if (!mem) return { error: 'Accesso negato' }
-
-  // Sprint disponibile solo dalle 06:00
-  const now = new Date()
-  if (now.getHours() < 6) return { error: 'La gara parte alle 06:00!' }
-
+  // RPC SECURITY DEFINER: claim atomico + assegnazione punti.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const db = supabase as any
-  const today = now.toISOString().split('T')[0]
-
-  // INSERT atomico: ON CONFLICT → qualcun altro ha già vinto oggi
-  const { data: sprint, error } = await db
-    .from('daily_sprints')
-    .insert({ trip_id: tripId, winner_id: user.id, sprint_date: today })
-    .select('id, winner_id')
-    .single()
-
-  if (error) {
-    // Codice 23505 = unique_violation → già reclamato da qualcun altro
-    if (error.code === '23505') {
-      const { data: existing } = await db
-        .from('daily_sprints').select('winner_id')
-        .eq('trip_id', tripId).eq('sprint_date', today).single()
-      return { alreadyClaimed: true, winnerId: existing?.winner_id }
-    }
-    return { error: error.message }
-  }
-
-  // Primo a premere → +20 punti
-  await awardPoints(tripId, user.id, 'morning_sprint')
-  return { success: true, winnerId: sprint.winner_id }
+  const { data, error } = await (supabase as any).rpc('claim_morning_sprint', { p_trip_id: tripId })
+  if (error) return { error: error.message }
+  const res = data as { winner_id: string | null; awarded: boolean }
+  if (res.awarded) return { success: true, winnerId: res.winner_id ?? undefined }
+  return { alreadyClaimed: true, winnerId: res.winner_id ?? undefined }
 }
 
 // ── Stato sprint di oggi ──────────────────────────────────────────

@@ -2,7 +2,7 @@
 
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createClient }               from '@supabase/supabase-js'
-import { awardPoints }                from '@repo/shared/supabase/gamification'
+import { awardPoints }                from '@repo/shared/supabase/gamification-server'
 
 export interface TriviaQuestion {
   q:           string
